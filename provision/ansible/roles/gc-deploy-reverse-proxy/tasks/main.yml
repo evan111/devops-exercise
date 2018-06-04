@@ -1,0 +1,16 @@
+---
+# tasks file for gc-reverse-proxy
+
+- name: Create nginx ingress rules
+  command: kubectl create -f Ingress-yo.yml
+  args:
+      chdir: ../k8s/
+
+- name: Create helm nginx ingress.
+  command: helm install stable/nginx-ingress --name yo --set rbac.create=true:controller.config=yo-ingress-config
+  ignore_errors: true
+  args:
+      chdir: ../k8s/
+
+
+

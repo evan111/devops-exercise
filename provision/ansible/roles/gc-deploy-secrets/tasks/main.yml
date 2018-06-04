@@ -1,0 +1,4 @@
+---
+# tasks file for gc-deploy-secrets
+- name: Dynamically create kubenetes secret for mysql root password
+  command: kubectl create secret generic root-sql-pass --from-literal=password=cGFzc3dvcmQ=

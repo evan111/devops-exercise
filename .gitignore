@@ -2,3 +2,7 @@
 .project
 target
 .settings
+.idea
+yo.iml
+*.retry
+.vault_pass

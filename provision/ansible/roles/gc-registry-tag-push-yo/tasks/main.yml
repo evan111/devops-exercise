@@ -1,0 +1,7 @@
+---
+# tasks file for gc-registry-tag-push-yo
+- name: Tag the yo docker image
+  command: "docker tag springio/yo {{yo_docker_tag}}"
+
+- name: Push the tagged yo docker image to google container registry
+  command: "docker push {{yo_docker_tag}}"

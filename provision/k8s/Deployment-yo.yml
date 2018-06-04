@@ -1,0 +1,54 @@
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: yo
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: yo
+
+---
+
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: yo
+  labels:
+    app: yo
+spec:
+  selector:
+    matchLabels:
+      app: yo
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: yo
+    spec:
+      containers:
+      - image: us.gcr.io/dark-berm-205620/yo
+        name: yo
+        env:
+        - name: YO_DB_HOST
+          value: yomysql-mysql
+#        - name: YO_DB_PASSWORD # The sql password has been baked into the yo docker file. :(
+#          valueFrom:
+#            secretKeyRef:
+#              name: mysql-pass
+#              key: password
+        ports:
+        - containerPort: 8080
+          name: yo
+        livenessProbe:
+          httpGet:
+            path: /v1/user/list
+            port: 8080
+          initialDelaySeconds: 15
+          timeoutSeconds: 2
+          periodSeconds: 15

@@ -1,0 +1,12 @@
+---
+# tasks file for gc-redeploy-mysql
+- name: Remove existing helm yomysql deployment. Note in the real world we would use tags in kubernetes and migrate between versions.
+  command: helm delete yomysql --purge
+  ignore_errors: true
+  args:
+      chdir: ../k8s/
+
+- name: Create yomysql deployment
+  command: helm install --name yomysql --set mysqlRootPassword="{{mysql_root_password}}",mysqlUser="{{mysql_yo_user}}",mysqlPassword="{{mysql_yo_password}}",mysqlDatabase=yo stable/mysql
+  args:
+      chdir: ../k8s/

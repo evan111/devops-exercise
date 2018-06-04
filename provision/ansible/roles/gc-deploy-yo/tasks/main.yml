@@ -1,0 +1,12 @@
+---
+# tasks file for gc-redeploy-yo
+- name: Remove existing yo deployment. Note in the real world we would use tags in kubernetes and migrate between versions.
+  command: kubectl delete -f Deployment-yo.yml
+  ignore_errors: true
+  args:
+      chdir: ../k8s/
+
+- name: Create yomysql deployment
+  command: kubectl create -f Deployment-yo.yml
+  args:
+      chdir: ../k8s/

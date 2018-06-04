@@ -1,0 +1,6 @@
+---
+- name: Remove all YO/MySql pods/services on GCloud Kubernetes
+  hosts: gcloudK8s
+  roles:
+      - gc-destroy-all
+

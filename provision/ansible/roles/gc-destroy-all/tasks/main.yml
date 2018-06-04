@@ -1,0 +1,32 @@
+---
+# tasks file for gc-destroy-all
+- name: Remove existing helm nginx ingress
+  command: helm delete my-nginx --purge
+  ignore_errors: true
+  args:
+      chdir: ../k8s/
+
+- name: Remove nginx ingress rules
+  command: kubectl delete -f Ingress-yo.yml
+  ignore_errors: true
+  args:
+      chdir: ../k8s/
+
+- name: Remove existing yo deployment. Note in the real world we would use tags in kubernetes and migrate between versions.
+  command: kubectl delete -f Deployment-yo.yml
+  ignore_errors: true
+  args:
+      chdir: ../k8s/
+
+- name: Remove existing yomysql helm deployment. Note in the real world we would use tags in kubernetes and migrate between versions.
+  command: helm delete yomysql --purge
+  ignore_errors: true
+  args:
+      chdir: ../k8s/
+
+- name: Delete kubenetes secret for mysql root password
+  ignore_errors: true
+  command: kubectl delete secret root-sql-pass
+
+- debug:
+    msg: "GCloud Container Registry is NOT being removed"

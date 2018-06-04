@@ -1,0 +1,13 @@
+[gcloudK8s]
+localhost
+
+[gcloudK8s:vars]
+yo_docker_tag='us.gcr.io/dark-berm-205620/yo' # Docker tag for yo app for GCloud Container Registry <region>/<project>/<tag>. If you change this value, verify that the k8s/Deployment-yo.yml is also updated
+yo_port=80 # External port for yo app
+health_get_ip_retries=30 # Get dynamic ip for yo app retries
+health_get_ip_retry_wait=5 # Get dynamic ip for yo app wait between retries
+health_get_endpoint_retries=100 # Get expected http response retries
+health_get_endpoint_retry_wait=3 # Get expected http response wait between retries
+mysql_yo_user=youser # Mysql yo user name
+vars_files:
+    - ./vars/secrets.yaml # Encrypted variables loaded into hosts

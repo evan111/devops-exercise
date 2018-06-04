@@ -1,0 +1,39 @@
+---
+# tasks file for gc-external-health-check
+- name: Health check service yo from external IP (Ingress) retries on non-zero return code
+  shell: |
+    count=0
+       until [ $count -ge "{{health_get_ip_retries}}" ]
+       do
+          kubectl describe services yo-nginx-ingress-controller | grep 'LoadBalancer Ingress:' | grep -oE '\d+\.\d+\.\d+\.\d+' && break
+          count=$[$count+1]
+          sleep "{{health_get_ip_retry_wait}}"
+       done
+  register: ingress_ip
+
+- set_fact: external_end_point="{{ ingress_ip.stdout }}"
+
+# Unfortunately we cannot use Ansible uri when when calling insecure ssl. a python 2.7 bug appears:
+# Request failed: <urlopen error [SSL: UNKNOWN_PROTOCOL] unknown protocol (_ssl.c:590)>"
+# https://github.com/ansible/ansible/issues/19203 -> to further investigate
+#
+#- name: Check connection GET returns content and an http status code of 200
+#  uri:
+#    url: "http://{{external_end_point}}:{{yo_port}}/v1/user/list"
+#    method: GET
+#    return_content: yes
+#    status_code: 200
+#    validate_certs: no # we are not going to worry for now if there is a valid certificate
+#    follow_redirects: all
+#    retries: "{{health_get_endpoint_retries}}"
+#    delay: "{{health_get_endpoint_retry_wait}}"
+
+# Created due to above python UNKNOWN_PROTOCOL issue
+- name: Check connection GET returns content and an http status code of 200
+  command: curl --write-out %{http_code} --insecure --max-time "{{health_get_endpoint_retry_wait}}" --silent -L --output /dev/null http://{{external_end_point}}:{{yo_port}}/v1/user/list
+  args:
+      chdir: ../k8s/
+  retries: "{{health_get_endpoint_retries}}"
+  delay: 1 # Real delay is in curl
+  register: result
+  until: result.stdout == "200"

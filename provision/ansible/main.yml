@@ -1,0 +1,12 @@
+---
+- name: Provision YO on GCloud Kubernetes
+  hosts: gcloudK8s
+  roles:
+#      - gc-deploy-secrets # not used due baked in passwords in yo springboot app
+      - gc-deploy-mysql
+      - gc-dockerize-yo
+      - gc-registry-tag-push-yo
+      - gc-deploy-yo
+      - gc-deploy-reverse-proxy
+      - gc-external-health-check
+
